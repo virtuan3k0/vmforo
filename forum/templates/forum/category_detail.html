@@ -1,0 +1,30 @@
+{% extends 'forum/base_generic.html' %}
+
+{% block content %}
+  <h1>{{ category.title }}</h1>
+  
+  <!-- Link to create a new thread -->
+  {% if user.is_authenticated %}
+    <a href="{% url 'forum:thread_create' slug=category.slug %}">Create a new thread</a>
+  {% endif %}
+  
+  <ul>
+    {% for thread in threads %}
+      <li>
+        <a href="{% url 'forum:thread_detail' slug=thread.slug %}">
+          {{ thread.title }}
+        </a>
+        <br>
+        Last post by 
+        {% if thread.posts.last %}
+          <a href="{% url 'forum:user_profile' username=thread.posts.last.author.username %}">
+            {{ thread.posts.last.author.username }}
+          </a>
+          on {{ thread.posts.last.created_at|date:"Y-m-d H:i" }}
+        {% else %}
+          No posts yet
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}

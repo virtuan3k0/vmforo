@@ -1,0 +1,63 @@
+<ul>
+    {% for reply in post.replies.all %}
+      <li id="post-{{ reply.id }}">
+        <div class="reply-header">
+            {% if reply.author.avatar %}
+                <img src="{{ reply.author.avatar.url }}" alt="{{ reply.author.username }}'s avatar" class="avatar">
+            {% endif %}
+            <strong><a href="{% url 'forum:user_profile' username=reply.author.username %}">{{ reply.author.username }}</a></strong> - {{ reply.created_at|date:"Y-m-d H:i" }}<br>
+            <small>City: {{ reply.author.city }}</small><br>
+            <small>Messages: {{ reply.author.forum_messages }}</small>
+        </div>
+        <div class="reply-content" id="post-content-{{ reply.id }}">
+            {{ reply.content }}
+        </div>
+        <textarea id="edit-post-content-{{ reply.id }}" style="display:none;">{{ reply.content }}</textarea>
+        <p id="post-edited-info-{{ reply.id }}">
+            {% if reply.updated_at > reply.created_at %}
+                Edited at {{ reply.updated_at|date:"Y-m-d H:i" }}
+            {% endif %}
+        </p>
+        <div>
+            <span id="likes-count-{{ reply.id }}">{{ reply.likes_count }}</span> likes
+            <button id="like-button-{{ reply.id }}" onclick="toggleLike('{{ reply.id }}')">
+                {% if reply.id in liked_posts %}
+                    Unlike
+                {% else %}
+                    Like
+                {% endif %}
+            </button>
+        </div>
+        {% if request.user.is_authenticated %}
+            <button onclick="showReplyForm('{{ reply.id }}')">Reply</button>
+            {% if request.user == reply.author %}
+                <button id="edit-post-button-{{ reply.id }}" onclick="togglePostEdit('{{ reply.id }}')">Edit</button>
+                <button id="save-post-button-{{ reply.id }}" onclick="savePostEdit('{{ reply.id }}')" style="display:none;">Save</button>
+                <button id="cancel-post-button-{{ reply.id }}" onclick="togglePostEdit('{{ reply.id }}')" style="display:none;">Cancel</button>
+                <button id="delete-post-button-{{ reply.id }}" onclick="deletePost('{{ reply.id }}')">Delete</button>
+                <!-- Ordering options for nested replies -->
+                <div class="ordering-options">
+                    <label for="order-replies-by-{{ reply.id }}">Order replies by:</label>
+                    <select id="order-replies-by-{{ reply.id }}" onchange="orderReplies('{{ reply.id }}')">
+                        <option value="created_at" {% if reply.order_replies_by == 'created_at' %}selected{% endif %}>Date</option>
+                        <option value="likes_count" {% if reply.order_replies_by == 'likes_count' %}selected{% endif %}>Likes</option>
+                    </select>
+                    <select id="order-replies-direction-{{ reply.id }}" onchange="orderReplies('{{ reply.id }}')">
+                        <option value="asc" {% if reply.order_replies_direction == 'asc' %}selected{% endif %}>Ascending</option>
+                        <option value="desc" {% if reply.order_replies_direction == 'desc' %}selected{% endif %}>Descending</option>
+                    </select>
+                </div>
+            {% endif %}
+            <div id="reply-form-{{ reply.id }}" class="reply-form" style="display:none; margin-top:10px;">
+                <form method="post" action="{% url 'forum:add_post' thread.slug %}">
+                    {% csrf_token %}
+                    <textarea name="content" placeholder="Write your reply..."></textarea>
+                    <input type="hidden" name="parent_id" value="{{ reply.id }}">
+                    <button type="submit">Reply</button>
+                </form>
+            </div>
+        {% endif %}
+        {% include 'forum/post_replies.html' with post=reply %}
+      </li>
+    {% endfor %}
+</ul>

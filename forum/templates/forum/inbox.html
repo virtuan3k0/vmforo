@@ -1,0 +1,52 @@
+{% extends 'forum/base_generic.html' %}
+
+{% block content %}
+  <h1>Inbox</h1>
+
+  <a href="{% url 'forum:send_message' %}" class="btn btn-primary">Send New Message</a>
+
+  <h2>Received Messages</h2>
+  <ul>
+    {% if messages_received %}
+      {% for message in messages_received %}
+        <li>
+          <strong>{{ message.title }}</strong><br>
+          {% if not message.read %}
+            <strong>{{ message.sender.username }}: {{ message.content|truncatechars:50 }}</strong>
+            <span style="color: red;">(Unread)</span>
+          {% else %}
+            {{ message.sender.username }}: {{ message.content|truncatechars:50 }}
+          {% endif %}
+          <br>
+          <small>Sent at: {{ message.timestamp|date:"Y-m-d H:i" }}</small>
+          <br>
+          <a href="{% url 'forum:message_detail' pk=message.pk %}">
+            <button>Read</button>
+          </a>
+        </li>
+      {% endfor %}
+    {% else %}
+      <li>No received messages found.</li>
+    {% endif %}
+  </ul>
+
+  <h2>Sent Messages</h2>
+  <ul>
+    {% if messages_sent %}
+      {% for message in messages_sent %}
+        <li>
+          <strong>{{ message.title }}</strong><br>
+          {{ message.recipient.username }}: {{ message.content|truncatechars:50 }}
+          <br>
+          <small>Sent at: {{ message.timestamp|date:"Y-m-d H:i" }}</small>
+          <br>
+          <a href="{% url 'forum:message_detail' pk=message.pk %}">
+            <button>Read</button>
+          </a>
+        </li>
+      {% endfor %}
+    {% else %}
+      <li>No sent messages found.</li>
+    {% endif %}
+  </ul>
+{% endblock %}

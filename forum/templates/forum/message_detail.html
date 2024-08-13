@@ -1,0 +1,19 @@
+{% extends 'forum/base_generic.html' %}
+
+{% block content %}
+  <h1>{{ message.title }}</h1>
+  <h2>Message from <a href="{% url 'forum:user_profile' username=message.sender.username %}">{{ message.sender.username }}</a></h2>
+  <p>{{ message.content }}</p>
+  <p><small>Sent at: {{ message.timestamp|date:"Y-m-d H:i" }}</small></p>
+  <p><small>To: 
+      {% for recipient in message.recipients.all %}
+          <a href="{% url 'forum:user_profile' username=recipient.username %}">{{ recipient.username }}</a>{% if not forloop.last %}, {% endif %}
+      {% endfor %}
+  </small></p>
+  
+  {% if request.user == message.recipient %}
+    <a href="{% url 'forum:send_message_with_username' username=message.sender.username %}?quote={{ message.content|urlencode }}"><button>Reply</button></a>
+  {% endif %}
+  
+  <a href="{% url 'forum:inbox' %}">Back to Inbox</a>
+{% endblock %}

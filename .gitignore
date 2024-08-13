@@ -1,0 +1,30 @@
+# Python
+*.pyc
+__pycache__/
+
+# Virtual Environment
+venv/
+
+# Django
+*.log
+*.pot
+*.py[cod]
+*.sqlite3
+db.sqlite3
+media
+staticfiles
+local_settings.py
+
+# macOS
+.DS_Store
+
+# Windows
+thumbs.db
+ehthumbs.db
+
+# JetBrains
+.idea/
+.idea/*
+
+# VS Code
+.vscode/

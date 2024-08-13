@@ -1,0 +1,21 @@
+{% extends 'forum/base_generic.html' %}
+
+{% block content %}
+  <h1>{{ profile_user.username }}'s Profile</h1>
+
+  {% if profile_user.avatar %}
+    <img src="{{ profile_user.avatar.url }}" alt="{{ profile_user.username }}'s avatar" class="avatar">
+  {% endif %}
+
+  <p><strong>Email:</strong> {{ profile_user.email }}</p>
+  <p><strong>City:</strong> {{ profile_user.city }}</p>
+  <p><strong>Bio:</strong> {{ profile_user.bio }}</p>
+  <p><strong>Forum Messages:</strong> {{ profile_user.forum_messages }}</p>
+  <p><strong>Educational Status:</strong> {{ profile_user.get_educational_status_display }}</p>
+  <p><strong>Desired Specialty:</strong> {{ profile_user.get_desired_specialty_display }}</p>
+
+  <!-- Send Message Button -->
+  {% if request.user.is_authenticated and request.user != profile_user %}
+      <a href="{% url 'forum:send_message_with_username' username=profile_user.username %}" class="btn btn-primary">Send Message</a>
+  {% endif %}
+{% endblock %}

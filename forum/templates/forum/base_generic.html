@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Forum{% endblock %}</title>
+    {% load static %}
+    <link href="{% static 'css/output.css' %}" rel="stylesheet">
+</head>
+<body class="bg-gray-50 text-gray-900">
+    <header class="bg-blue-700 text-white py-6">
+        <h1 class="text-3xl font-bold text-center">Welcome to the Forum</h1>
+        <nav class="mt-4">
+            <ul class="flex justify-center space-x-6">
+                <li><a class="text-white hover:text-yellow-300 font-semibold" href="{% url 'forum:forum_main' %}">Home</a></li>
+                {% if category %}
+                    <li><a class="text-white hover:text-yellow-300 font-semibold" href="{% url 'forum:category_detail' slug=category.slug %}">{{ category.title }}</a></li>
+                {% endif %}
+                {% if request.user.is_authenticated %}
+                    <li><a class="text-white hover:text-yellow-300 font-semibold" href="{% url 'forum:inbox' %}">Inbox {% if unread_count > 0 %}({{ unread_count }}){% endif %}</a></li>
+                    <li><a class="text-white hover:text-yellow-300 font-semibold" href="{% url 'forum:custom_logout' %}">Logout</a></li>
+                {% else %}
+                    <li><a class="text-white hover:text-yellow-300 font-semibold" href="{% url 'forum:custom_login' %}">Login</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+    
+    <main class="container mx-auto py-8 px-4">
+        {% block content %}
+        {% endblock %}
+    </main>
+    
+    <footer class="bg-blue-700 text-white py-4 mt-8 text-center">
+        <p>&copy; 2024 Forum</p>
+    </footer>
+</body>
+</html>
